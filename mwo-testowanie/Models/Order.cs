@@ -12,8 +12,10 @@ public class Order
     [Required]
     public OrderState State { get; set; }
     
+    public Guid UserId { get; set; }
+    
     [Required]
-    [ForeignKey("client_id")]
+    [ForeignKey(nameof(UserId))]
     public virtual Client Client { get; set; }
     
     public virtual List<Product> Products { get; set; }
