@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mwo-testowanie", "mwo-testowanie\mwo-testowanie.csproj", "{907DEDB2-0C53-4A9F-AA23-B4282B73016B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{907DEDB2-0C53-4A9F-AA23-B4282B73016B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{907DEDB2-0C53-4A9F-AA23-B4282B73016B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{907DEDB2-0C53-4A9F-AA23-B4282B73016B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{907DEDB2-0C53-4A9F-AA23-B4282B73016B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
