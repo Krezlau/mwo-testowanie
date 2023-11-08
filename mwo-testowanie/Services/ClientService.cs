@@ -29,6 +29,8 @@ public class ClientService : IClientService
 
     public async Task<Guid> CreateClientAsync(ClientCreateDTO client)
     {
+        if (client is null) throw new ArgumentNullException(nameof(client));
+        
         var clientEntity = _mapper.Map<Client>(client);
         await _clientRepo.CreateAsync(clientEntity);
         return clientEntity.Id;
@@ -36,6 +38,8 @@ public class ClientService : IClientService
 
     public async Task UpdateClientAsync(Guid id, ClientCreateDTO client)
     {
+        if (client is null) throw new ArgumentNullException(nameof(client));
+        
         var clientInDb = await _clientRepo.GetAsync(c => c.Id == id);
         if (clientInDb is null) throw new Exception("Client not found");
         _mapper.Map(client, clientInDb);

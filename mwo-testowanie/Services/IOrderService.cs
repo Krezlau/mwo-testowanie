@@ -9,5 +9,5 @@ public interface IOrderService
     Task<List<OrderDTO>> GetOrdersForUserAsync(Guid userId);
     Task<Guid> CreateOrderAsync(OrderCreateDTO order);
     Task UpdateOrderStateAsync(Guid id, OrderState state);
-    Task DeleteOrderAsync(Guid id);
+    Task CancelOrderAsync(Guid id);
 }

@@ -8,5 +8,5 @@ public class OrderDTO
     public Guid Id { get; set; }
     public OrderState State { get; set; }
     public Guid ClientId { get; set; }
-    public virtual List<ProductDTO> Products { get; set; }
+    public virtual List<(ProductDTO product, int quantity)> Products { get; set; }
 }

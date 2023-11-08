@@ -7,5 +7,5 @@ public class OrderCreateDTO
     [Required]
     public Guid ClientId { get; set; }
     [Required]
-    public List<Guid> ProductIds { get; set; }
+    public List<(Guid productId, int quantity)> ProductIds { get; set; }
 }
