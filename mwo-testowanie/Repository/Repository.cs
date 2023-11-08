@@ -15,7 +15,7 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = _context.Set<T>();
     }
 
-    public async Task<T?> GetAsync(Expression<Func<T, bool>>? filter = null)
+    public async Task<T?> GetAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
     {
         IQueryable<T> query = _dbSet;
         
@@ -23,11 +23,15 @@ public class Repository<T> : IRepository<T> where T : class
         {
             query = query.Where(filter);
         }
+
+        if (includeProperties is null) return await query.FirstOrDefaultAsync();
         
+        query = includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, property) => current.Include(property));
         return await query.FirstOrDefaultAsync();
     }
 
-    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null)
+    public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
     {
         IQueryable<T> query = _dbSet;
         
@@ -35,6 +39,10 @@ public class Repository<T> : IRepository<T> where T : class
         {
             query = query.Where(filter);
         }
+        if (includeProperties is null) return await query.ToListAsync();
+        
+        query = includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, property) => current.Include(property));
         
         var result = await query.ToListAsync();
 

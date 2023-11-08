@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace mwo_testowanie.Models;
+namespace mwo_testowanie.Models.DTOs;
 
-public class Product
+public class ProductCreateDTO
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
-    
     [Required]
     [MinLength(3)]
     [MaxLength(50)]
@@ -21,6 +16,4 @@ public class Product
     [Required]
     [Range(0, int.MaxValue)]
     public int QuantityLeft { get; set; }
-    
-    public virtual List<Order> Orders { get; set; }
 }
