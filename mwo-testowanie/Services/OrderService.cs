@@ -10,12 +10,14 @@ public class OrderService : IOrderService
     private readonly IRepository<Order> _repository;
     private readonly IMapper _mapper;
     private readonly IRepository<Product> _productRepo;
+    private readonly IRepository<Client> _clientRepo;
 
-    public OrderService(IRepository<Order> repository, IMapper mapper, IRepository<Product> productRepo)
+    public OrderService(IRepository<Order> repository, IMapper mapper, IRepository<Product> productRepo, IRepository<Client> clientRepo)
     {
         _repository = repository;
         _mapper = mapper;
         _productRepo = productRepo;
+        _clientRepo = clientRepo;
     }
 
     public async Task<OrderDTO> GetOrderAsync(Guid id)
@@ -32,8 +34,11 @@ public class OrderService : IOrderService
     {
         if (order is null) throw new ArgumentNullException(nameof(order));
         
+        if (await _clientRepo.GetAsync(c => c.Id == order.ClientId) is null)
+            throw new ArgumentException($"Client with id {order.ClientId} does not exist");
+        
         var orderEntity = _mapper.Map<Order>(order);
-        orderEntity.Products = new List<(Product, int)>();
+        orderEntity.Products = new List<ProductQuantity>();
         foreach (var (product, quantity) in order.ProductIds)
         {
             var productEntity = await _productRepo.GetAsync(p => p.Id == product);
@@ -43,7 +48,12 @@ public class OrderService : IOrderService
             productEntity.QuantityLeft -= quantity;
             await _productRepo.UpdateAsync(productEntity);
             
-            orderEntity.Products.Add((productEntity, quantity));
+            orderEntity.Products.Add(new ProductQuantity()
+            {
+                Product = productEntity,
+                Quantity = quantity,
+                Order = orderEntity
+            });
         }
 
         await _repository.CreateAsync(orderEntity);
@@ -61,13 +71,15 @@ public class OrderService : IOrderService
 
     public async Task CancelOrderAsync(Guid id)
     {
-        var orderEntity = await _repository.GetAsync(o => o.Id == id);
+        var orderEntity = await _repository.GetAsync(o => o.Id == id, "Products");
         if (orderEntity is null) throw new ArgumentException($"Order with id {id} does not exist");
         
         // update product quantity
-        foreach (var (product, quantity) in orderEntity.Products)
+        foreach (var productq in orderEntity.Products)
         {
-            product.QuantityLeft += quantity;
+            var product = await _productRepo.GetAsync(p => p.Id == productq.ProductId);
+            if (product is null) throw new ArgumentException($"Product with id {productq.ProductId} does not exist");
+            product.QuantityLeft += productq.Quantity;
             await _productRepo.UpdateAsync(product);
         }
 

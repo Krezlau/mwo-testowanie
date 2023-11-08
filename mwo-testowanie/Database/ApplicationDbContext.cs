@@ -12,11 +12,17 @@ public class ApplicationDbContext : DbContext
     public DbSet<Client> Clients { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<ProductQuantity> ProductQuantities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Client>()
             .HasIndex(c => c.Email)
             .IsUnique();
+
+        modelBuilder.Entity<Order>()
+            .HasMany<Product>()
+            .WithMany()
+            .UsingEntity<ProductQuantity>();
     }
 }

@@ -18,5 +18,5 @@ public class Order
     [ForeignKey(nameof(UserId))]
     public virtual Client Client { get; set; }
     
-    public virtual List<(Product product, int quantity)> Products { get; set; }
+    public virtual List<ProductQuantity> Products { get; set; }
 }

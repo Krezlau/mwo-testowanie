@@ -22,5 +22,5 @@ public class Product
     [Range(0, int.MaxValue)]
     public int QuantityLeft { get; set; }
     
-    public virtual List<Order> Orders { get; set; }
+    public virtual List<ProductQuantity> Orders { get; set; }
 }
