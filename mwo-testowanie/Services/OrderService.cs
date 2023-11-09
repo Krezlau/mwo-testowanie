@@ -74,12 +74,14 @@ public class OrderService : IOrderService
         var orderEntity = await _repository.GetAsync(o => o.Id == id, "Products");
         if (orderEntity is null) throw new ArgumentException($"Order with id {id} does not exist");
         
+        if (orderEntity.Products is null) throw new ArgumentNullException($"Order with id {id} does not have any products");
         // update product quantity
         foreach (var productq in orderEntity.Products)
         {
             var product = await _productRepo.GetAsync(p => p.Id == productq.ProductId);
             if (product is null) throw new ArgumentException($"Product with id {productq.ProductId} does not exist");
-            product.QuantityLeft += productq.Quantity;
+            if (productq.Quantity > 0)
+                product.QuantityLeft += productq.Quantity;
             await _productRepo.UpdateAsync(product);
         }
 

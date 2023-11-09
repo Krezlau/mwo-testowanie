@@ -1,0 +1,23 @@
+﻿[
+  {
+    "id": "a24fc580-b566-4dae-91e3-8276cc8bfb1c",
+    "name": "John",
+    "surname": "Doe",
+    "email": "john@doe.com",
+    "orders": []
+  },
+  {
+    "id": "a24fc580-b566-4dae-91e3-9276cc8bfb1c",
+    "name": "Jackson",
+    "surname": "Doe",
+    "email": "jackson@doe.com",
+    "orders": []
+  },
+  {
+    "id": "a24fc580-b566-4dae-11e3-8276cc8bfb1c",
+    "name": "Michael",
+    "surname": "Doe",
+    "email": "michael@doe.com",
+    "orders": []
+  }
+]
