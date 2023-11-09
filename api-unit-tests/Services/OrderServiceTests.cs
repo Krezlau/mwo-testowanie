@@ -474,4 +474,40 @@ public class OrderServiceTests
         // Assert
         product.QuantityLeft.Should().Be(10);
     }
+
+    [Fact]
+    public async Task UpdateOrderAsync_LastProductIsInvalid_ShouldNotCreateEntityEndNotUpdateQuantities()
+    {
+        // Arrange
+        var product = new Product() {Id = new Guid(), QuantityLeft = 10};
+        var product2 = new Product() {Id = new Guid("8f7aaf96-bf12-48bb-8104-cd56086241c1"), QuantityLeft = 10};
+        var order = new OrderCreateDTO()
+        {
+            ClientId = new Guid(),
+            ProductIds = new List<(Guid, int)>() {(product.Id, 1), (product2.Id, 2)}
+        };
+        
+        _orderRepoMock.Setup(r => r.UpdateAsync(It.IsAny<Order>()))
+            .Returns(Task.CompletedTask);
+        
+        _clientRepoMock.Setup(r => r.GetAsync(It.IsAny<Expression<Func<Client, bool>>>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(new Client());
+
+        _productRepoMock.SetupSequence(r => r.GetAsync(It.IsAny<Expression<Func<Product, bool>>>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(product)
+            .ReturnsAsync((Product?)null);
+        
+        _productRepoMock.Setup(r => r.UpdateAsync(It.IsAny<Product>()))
+            .Returns(Task.CompletedTask);
+        
+        var service = new OrderService(_orderRepoMock.Object, _mapper, _productRepoMock.Object, _clientRepoMock.Object);
+        
+        // Act
+        Assert.ThrowsAsync<ArgumentException>(async () => await service.CreateOrderAsync(order));
+        
+        // Assert
+        product.QuantityLeft.Should().Be(10);
+    }
 }

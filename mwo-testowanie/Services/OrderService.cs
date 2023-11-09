@@ -39,14 +39,11 @@ public class OrderService : IOrderService
         
         var orderEntity = _mapper.Map<Order>(order);
         orderEntity.Products = new List<ProductQuantity>();
+        
         foreach (var (product, quantity) in order.ProductIds)
         {
             var productEntity = await _productRepo.GetAsync(p => p.Id == product);
             if (productEntity is null) throw new ArgumentException($"Product with id {product} does not exist");
-            
-            // update product quantity
-            productEntity.QuantityLeft -= quantity;
-            await _productRepo.UpdateAsync(productEntity);
             
             orderEntity.Products.Add(new ProductQuantity()
             {
@@ -56,6 +53,13 @@ public class OrderService : IOrderService
             });
         }
 
+        foreach (var productq in orderEntity.Products)
+        {
+            // update product quantity
+            productq.Product.QuantityLeft -= productq.Quantity;
+            await _productRepo.UpdateAsync(productq.Product);
+        }
+        
         await _repository.CreateAsync(orderEntity);
         return orderEntity.Id;
     }
@@ -76,13 +80,18 @@ public class OrderService : IOrderService
         
         if (orderEntity.Products is null) throw new ArgumentNullException($"Order with id {id} does not have any products");
         // update product quantity
+        List<(Product p, int q)> products = new();
         foreach (var productq in orderEntity.Products)
         {
             var product = await _productRepo.GetAsync(p => p.Id == productq.ProductId);
             if (product is null) throw new ArgumentException($"Product with id {productq.ProductId} does not exist");
-            if (productq.Quantity > 0)
-                product.QuantityLeft += productq.Quantity;
-            await _productRepo.UpdateAsync(product);
+            products.Add((product, productq.Quantity));
+        }
+
+        foreach (var product in products)
+        {
+            if (product.q > 0) product.p.QuantityLeft += product.q;
+            await _productRepo.UpdateAsync(product.p);
         }
 
         await _repository.DeleteAsync(orderEntity);
